@@ -6,7 +6,7 @@ namespace CatalogService.DTOs
     public class DTOs
     {
         public record ItemDTO(
-            Guid id,
+            Guid Id,
             string Name,
             string Description,
             decimal Price,
