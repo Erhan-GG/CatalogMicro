@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CatalogService.Repositories
 {
-    public class ItemsRepository
+    public class ItemsRepository : IItemsRepository
     {
         private const string collectionName = "items";
 
@@ -14,10 +14,8 @@ namespace CatalogService.Repositories
 
         private readonly FilterDefinitionBuilder<Item> filterBuilder = Builders<Item>.Filter;
 
-        public ItemsRepository()
+        public ItemsRepository(IMongoDatabase database)
         {
-            var mongoClient = new MongoClient("mongodb://localhost:27017");
-            var database = mongoClient.GetDatabase("Catalog");
             dbCollection = database.GetCollection<Item>(collectionName);
         }
 
@@ -34,7 +32,7 @@ namespace CatalogService.Repositories
 
         public async Task CreateAsync(Item item)
         {
-            if(item == null)
+            if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
             await dbCollection.InsertOneAsync(item);
