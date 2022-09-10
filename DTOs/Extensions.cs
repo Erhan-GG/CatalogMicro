@@ -1,13 +1,13 @@
 ﻿using CatalogService.Entities;
 using static CatalogService.DTOs.DTOs;
 
-namespace CatalogService
+namespace CatalogService.DTOs
 {
     public static class Extensions
     {
         public static ItemDTO AsDTO(this Item item)
         {
-            return new ItemDTO (
+            return new ItemDTO(
                 item.Id,
                 item.Name,
                 item.Description,
