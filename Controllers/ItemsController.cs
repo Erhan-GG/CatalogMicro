@@ -14,9 +14,9 @@ namespace CatalogService.Controllers
     [ApiController]
     public class ItemsController : ControllerBase
     {
-        private readonly IItemsRepository itemsRepository;
+        private readonly IEntityRepository<Item> itemsRepository;
 
-        public ItemsController(IItemsRepository itemsRepository)
+        public ItemsController(IEntityRepository<Item> itemsRepository)
         {
             this.itemsRepository = itemsRepository;
         }
