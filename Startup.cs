@@ -1,5 +1,8 @@
 using CatalogService.Entities;
+using Common.MassTransit;
 using Common.MongoDB;
+using Common.Settings;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -24,12 +27,16 @@ namespace CatalogService
         }
 
         public IConfiguration Configuration { get; }
+        public ServiceSettings serviceSettings { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            serviceSettings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
+
             services.AddMongo()
-                    .AddMongoRepository<Item>("items");
+                    .AddMongoRepository<Item>("items")
+                    .AddMassTransitWithRabbitMQ();
 
             services.AddControllers(options =>
             {

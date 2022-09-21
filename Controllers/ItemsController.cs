@@ -1,6 +1,8 @@
-﻿using CatalogService.DTOs;
+﻿using Catalog.Contracts;
+using CatalogService.DTOs;
 using CatalogService.Entities;
 using Common;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,10 +18,11 @@ namespace CatalogService.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IEntityRepository<Item> itemsRepository;
-
-        public ItemsController(IEntityRepository<Item> itemsRepository)
+        private readonly IPublishEndpoint publishEndpoint;
+        public ItemsController(IEntityRepository<Item> itemsRepository, IPublishEndpoint publishEndpoint)
         {
             this.itemsRepository = itemsRepository;
+            this.publishEndpoint = publishEndpoint;
         }
 
         [HttpGet]
@@ -52,6 +55,8 @@ namespace CatalogService.Controllers
 
             await itemsRepository.CreateAsync(item);
 
+            _ = publishEndpoint.Publish(new CatalogItemCreated(item.Id, item.Name, item.Description));
+
             return CreatedAtAction(nameof(GetByIdAsync), new { id = item.Id }, item);
         }
 
@@ -69,6 +74,8 @@ namespace CatalogService.Controllers
 
             await itemsRepository.UpdateAsync(existingItem);
 
+            _ = publishEndpoint.Publish(new CatalogItemUpdated(existingItem.Id, existingItem.Name, existingItem.Description));
+
             return NoContent();
         }
 
@@ -81,6 +88,8 @@ namespace CatalogService.Controllers
                 return NotFound();
 
             await itemsRepository.RemoveAsync(id);
+
+            _ = publishEndpoint.Publish(new CatalogItemDeleted(existingItem.Id));
 
             return NoContent();
         }
